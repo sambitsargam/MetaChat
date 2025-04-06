@@ -53,7 +53,7 @@ def whatsapp_webhook():
     while True:
         rprint(Panel("Waiting for LLM Output", style="bold blue"))
         response = openai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.5-preview",
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": incoming_msg},
