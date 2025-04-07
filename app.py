@@ -2,8 +2,8 @@ import json
 import os
 
 from flask import Flask, request, Response
-from twilio.twiml.messaging_response import MessagingResponse
 from dotenv import load_dotenv
+from twilio.rest import Client
 from aipolabs import ACI, meta_functions
 from aipolabs.types.functions import FunctionDefinitionFormat
 from openai import OpenAI
@@ -14,6 +14,16 @@ load_dotenv()
 LINKED_ACCOUNT_OWNER_ID = os.getenv("LINKED_ACCOUNT_OWNER_ID", "")
 if not LINKED_ACCOUNT_OWNER_ID:
     raise ValueError("LINKED_ACCOUNT_OWNER_ID is not set")
+
+# Twilio credentials from environment variables
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER", "")
+if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER):
+    raise ValueError("Twilio credentials are not set properly")
+
+# Initialize Twilio REST client
+twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 # Initialize OpenAI and ACI clients
 openai = OpenAI()
@@ -40,15 +50,19 @@ app = Flask(__name__)
 
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp_webhook():
-    # Receive incoming prompt from WhatsApp
+    # Extract the incoming message and sender's phone number from the request.
     incoming_msg = request.values.get("Body", "")
+    from_number = request.values.get("From", "")
+    rprint(Panel(f"Received message from: {from_number}", style="bold cyan"))
+    
     chat_history = []
     final_result = None
 
+    # Process the conversation loop with the LLM.
     while True:
         rprint(Panel("Waiting for LLM Output", style="bold blue"))
         response = openai.chat.completions.create(
-            model="gpt-4o-2024-08-06",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": incoming_msg},
@@ -71,7 +85,7 @@ def whatsapp_webhook():
 
         if tool_call:
             rprint(Panel(f"Function Call: {tool_call.function.name}", style="bold yellow"))
-            rprint(f"arguments: {tool_call.function.arguments}")
+            rprint(f"Arguments: {tool_call.function.arguments}")
             chat_history.append({"role": "assistant", "tool_calls": [tool_call]})
             result = aci.handle_function_call(
                 tool_call.function.name,
@@ -82,26 +96,32 @@ def whatsapp_webhook():
             )
             rprint(Panel("Function Call Result", style="bold magenta"))
             rprint(result)
-            chat_history.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": tool_call.id,
-                    "content": json.dumps(result),
-                }
-            )
+            chat_history.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": json.dumps(result),
+            })
             final_result = result
         else:
             rprint(Panel("Task Completed", style="bold green"))
             break
 
-    # Create Twilio MessagingResponse and explicitly set Content-Type as "application/xml"
-    resp = MessagingResponse()
+    # Prepare final result as string.
     if isinstance(final_result, dict):
         final_result_str = json.dumps(final_result)
     else:
         final_result_str = str(final_result)
-    resp.message(final_result_str)
-    return Response(str(resp), mimetype="application/xml"), 200
+
+    # Send the result manually via Twilio REST API.
+    message = twilio_client.messages.create(
+        body=final_result_str,
+        from_=TWILIO_PHONE_NUMBER,
+        to=from_number
+    )
+    rprint(Panel(f"Sent message SID: {message.sid}", style="bold cyan"))
+
+    # Return a simple response to acknowledge the webhook.
+    return "OK", 200
 
 if __name__ == "__main__":
     app.run(port=5000)
