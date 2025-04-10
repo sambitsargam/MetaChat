@@ -1,4 +1,4 @@
-Introduction
+## Introduction
 
 MetaChat transforms everyday messaging into a powerful and intelligent experience by seamlessly integrating crypto updates and other essential functions into WhatsApp—a platform you already use and love. With its intuitive interface, MetaChat removes complexity from daily tasks, allowing you to stay updated on market trends, manage notes, schedule events, send emails, and much more—all within a familiar messaging environment.
 
