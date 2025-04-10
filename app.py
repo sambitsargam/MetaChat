@@ -52,6 +52,11 @@ app = Flask(__name__)
 def whatsapp_webhook():
     # Extract the incoming message and sender's phone number from the request.
     incoming_msg = request.values.get("Body", "")
+    # modify the incoming message if generate is the first starting just delete first 2 words
+    if incoming_msg.lower().startswith("generate"):
+        incoming_msg = " ".join(incoming_msg.split()[2:])
+    rprint(Panel(f"Received message: {incoming_msg}", style="bold green"))
+
     from_number = request.values.get("From", "")
     rprint(Panel(f"Received message from: {from_number}", style="bold cyan"))
     

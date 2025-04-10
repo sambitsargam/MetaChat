@@ -584,6 +584,20 @@ wheels = [
 ]
 
 [[package]]
+name = "cloudinary"
+version = "1.44.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "six" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/aa/bb/e2bd0afcb213a433e28f11ce57a635cdaf7352c7bb2cd13e0b23784d40ef/cloudinary-1.44.0.tar.gz", hash = "sha256:eb2dcf08f5fa69a1476dd357071d05089b9c8219617dacdb1cb1294719c7f633", size = 186470 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/05/08/5027fab2346c5bf075aafe7f70d9187824dd5ef90a64a6339567e3bc3c48/cloudinary-1.44.0-py3-none-any.whl", hash = "sha256:8b2e5ac3f17068e79e58934b8836e6fea5d96536c1b85c3b4c3b9ebac44151ce", size = 147302 },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1937,6 +1951,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "anthropic" },
+    { name = "cloudinary" },
     { name = "crewai" },
     { name = "langchain" },
     { name = "langchain-openai" },
@@ -1957,6 +1972,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "anthropic", specifier = ">=0.49.0" },
+    { name = "cloudinary" },
     { name = "crewai", specifier = ">=0.108.0" },
     { name = "langchain", specifier = ">=0.3.21" },
     { name = "langchain-openai", specifier = ">=0.3.11" },
