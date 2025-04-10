@@ -20,7 +20,10 @@ WhatsApp is popular because it's fast, simple, and part of your daily routine. W
 - **Simple Scheduling:**  
   Organize your day with calendar events and reminders. Never miss a crypto meeting or important market event.
 
+- **Image Generation from Text:**  
+  Powered by the Venice image generation API, convert your text prompts into custom-generated images. Whether visualizing crypto market trends or your personal notes, this feature adds a dynamic, visual element to your chats.
+
 - **Multi-Tasking in One Message:**  
-  Handle several tasks at once—whether it’s checking a token balance, creating a note, sending an email, or scheduling an event, all in one message.
+  Handle several tasks at once—whether it’s checking a token balance, creating a note, sending an email, or scheduling an event—all in one message.
 
 Enjoy the convenience of managing your crypto life and everyday tasks—all through the familiar interface of WhatsApp with Metachat.
